@@ -2,6 +2,9 @@
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
+const { v4: uuidv4 } = require('uuid');
+// Need to figure out where to use this uuid
+// uuidv4();
 
 // Express configuration
 // Create an 'express' server
@@ -24,13 +27,14 @@ app.get("/notes", function (req, res) {
     res.sendFile(path.join(__dirname, './public/notes.html'));
 });
 
-
-// Use db.json to store and retrieve notes using fs 
-
+app.get("*", function (req, res) {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
 
 // API Routes
 
 app.get("/api/notes", function (req, res) {
+    // Use db.json to store and retrieve notes using fs 
     fs.readFile("./db/db.json", "utf-8", function (err, dbJson) {
         if (err) {
             console.log(err);
@@ -43,22 +47,35 @@ app.get("/api/notes", function (req, res) {
 
 });
 
-app.get("*", function (req, res) {
-    res.sendFile(path.join(__dirname, './public/index.html'));
-});
 
-// app.post("/api/notes", function (req, res) {
-//     const newNote = req.body;
-//     fs.writeFile("./db/db.json", newNote, function (err, data) {
-//         if (err) {
-//             console.log(err);
-//         }
-//         console.log(data);
+// Create a post request to add new note
+app.post("/api/notes", function (req, res) {
+    fs.readFile("./db/db.json", "utf-8", function (err, dbJson) {
+        if (err) {
+            console.log(err);
+        }
+        // console.log(dbJson);
 
-//         const savedNotes = JSON.parse(data);
-//         res.json(savedNotes);
-//     });
-// });
+        const savedNotes = JSON.parse(dbJson);
+        const newNote = req.body;
+        savedNotes.push(newNote);
+        // put this in a function
+        fs.writeFile("./db/db.json", JSON.stringify(savedNotes), function (err, data) {
+            if (err) {
+                console.log(err);
+            }
+            console.log(data);
+
+            res.json("saved results");
+        });
+    });
+
+})
+
+
+
+
+
 
 // Listener
 app.listen(PORT, () => {
