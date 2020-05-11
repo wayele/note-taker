@@ -27,9 +27,6 @@ app.get("/notes", function (req, res) {
     res.sendFile(path.join(__dirname, './public/notes.html'));
 });
 
-app.get("*", function (req, res) {
-    res.sendFile(path.join(__dirname, './public/index.html'));
-});
 
 // API Routes
 
@@ -42,6 +39,7 @@ app.get("/api/notes", function (req, res) {
         console.log(dbJson);
 
         const savedNotes = JSON.parse(dbJson);
+        // console.log(savedNotes);
         res.json(savedNotes);
     })
 
@@ -58,6 +56,8 @@ app.post("/api/notes", function (req, res) {
 
         const savedNotes = JSON.parse(dbJson);
         const newNote = req.body;
+        // newNote.id = savedNotes[savedNotes.length - 1].id + 1
+        newNote.id = uuidv4();
         savedNotes.push(newNote);
         // put this in a function
         fs.writeFile("./db/db.json", JSON.stringify(savedNotes), function (err, data) {
@@ -72,12 +72,41 @@ app.post("/api/notes", function (req, res) {
 
 })
 
+app.delete("/api/notes/:id", function (req, res) {
+    let selected = req.params.id;
+    console.log(selected);
+    fs.readFile("./db/db.json", "utf-8", function (err, dbJson) {
+        if (err) {
+            console.log(err);
+        }
+        const savedNotes = JSON.parse(dbJson);
+        const index = savedNotes.findIndex(el => el.id === selected)
+        savedNotes.splice(index, 1);
+        // console.log("removed ???")
+        console.log(savedNotes)
+
+        fs.writeFile("./db/db.json", JSON.stringify(savedNotes), function (err, data) {
+            if (err) {
+                console.log(err);
+            }
+            console.log(data);
+
+            res.json("saved results");
+        });
 
 
+    })
+
+})
+
+app.get("*", function (req, res) {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
 
 
 
 // Listener
 app.listen(PORT, () => {
     console.log("App listeninig on PORT " + PORT);
+
 })
