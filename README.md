@@ -19,7 +19,7 @@ Project url:
 (https://github.com/wayele/note-taker)
 
 ## Screenshots
-User is able to add, save, and delete using application <img src="./public/assets/scrnshots/note_scrnshot.png">
+User is able to add, save, and delete using application <img src="./Develop/public/assets/scrnshots/note_scrnshot.png">
 
 ## Technologies Used
 HTML, CSS, JavaScript, Node JS, npmpackages, express
